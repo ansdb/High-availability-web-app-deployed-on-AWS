@@ -5,3 +5,12 @@ Parameters:
   VPC-WebApp:
     Description: The web app VPC.
     Type: String
+
+Type: AWS::EC2::VPC
+Properties: 
+  CidrBlock: !Ref VPC-WebApp
+  EnableDnsHostnames: true
+  EnableDnsSupport: true
+  Tags: 
+    - Key: VPC
+    - Value: VPC - high availibility web application
