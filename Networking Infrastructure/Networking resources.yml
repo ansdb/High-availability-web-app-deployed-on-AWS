@@ -1,0 +1,16 @@
+Description:  This template contains all the necessary networking components/infrastructure to make the web app 
+              Highly available, scalable, efficient and secure.
+
+Parameters:
+  VPC-WebApp:
+    Description: The web app VPC.
+    Type: String
+
+Type: AWS::EC2::VPC
+Properties: 
+  CidrBlock: !Ref VPC-WebApp
+  EnableDnsHostnames: true
+  EnableDnsSupport: true
+  Tags: 
+    - Key: VPC
+    - Value: VPC - high availibility web application
