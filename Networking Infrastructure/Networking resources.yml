@@ -1,2 +1,7 @@
 Description:  This template contains all the necessary networking components/infrastructure to make the web app 
               Highly available, scalable, efficient and secure.
+
+Parameters:
+  VPC-WebApp:
+    Description: The web app VPC.
+    Type: String
