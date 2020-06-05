@@ -18,5 +18,13 @@
     {
         "ParameterKey": "PrivateSubnet2Cidr-WebApp",
         "ParameterValue": "10.3.0.0/24"
+    },
+    {
+        "ParameterKey": "AZ1-WebApp",
+        "ParameterValue": "us-west-1a"
+    },
+    {
+        "ParameterKey": "AZ2-WebApp",
+        "ParameterValue": "us-west-1b"
     }
 ]
