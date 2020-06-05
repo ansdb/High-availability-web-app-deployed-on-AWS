@@ -33,3 +33,23 @@ WebApp-VPC:
     Tags: 
       - Key: VPC
       - Value: VPC - high availibility web application
+
+WebApp-PublicSubnet1:
+  Type: AWS::EC2::Subnet
+  Properties: 
+    AvailabilityZone: !Ref AZ1-WebApp
+    CidrBlock: !Ref PublicSubnet1Cidr-WebApp
+    Tags: 
+      - Key: Public Subnet 1
+      - Value: Public Subnet 1 - high availibility web application
+    VpcId: !Ref WebApp-VPC
+
+WebApp-PublicSubnet2:
+  Type: AWS::EC2::Subnet
+  Properties: 
+    AvailabilityZone: !Ref AZ2-WebApp
+    CidrBlock: !Ref PublicSubnet2Cidr-WebApp
+    Tags: 
+      - Key: Public Subnet 2
+      - Value: Public Subnet 2 - high availibility web application
+    VpcId: !Ref WebApp-VPC
