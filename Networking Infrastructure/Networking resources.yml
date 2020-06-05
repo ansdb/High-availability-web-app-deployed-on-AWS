@@ -18,11 +18,12 @@ Parameters:
     Description: The web app - Private Subnet 2 CIDR
     Type: String
 
-Type: AWS::EC2::VPC
-Properties: 
-  CidrBlock: !Ref VPC-WebApp
-  EnableDnsHostnames: true
-  EnableDnsSupport: true
-  Tags: 
-    - Key: VPC
-    - Value: VPC - high availibility web application
+WebApp-VPC:
+  Type: AWS::EC2::VPC
+  Properties: 
+    CidrBlock: !Ref VPC-WebApp
+    EnableDnsHostnames: true
+    EnableDnsSupport: true
+    Tags: 
+      - Key: VPC
+      - Value: VPC - high availibility web application
