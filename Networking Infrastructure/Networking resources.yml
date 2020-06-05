@@ -17,6 +17,12 @@ Parameters:
   PrivateSubnet2Cidr-WebApp:
     Description: The web app - Private Subnet 2 CIDR
     Type: String
+  AZ1-WebApp:
+    Description: The web app - Availibility Zone 1
+    Type: String
+  AZ2-WebApp:
+    Description: The web app - Availibility Zone 2
+    Type: String
 
 WebApp-VPC:
   Type: AWS::EC2::VPC
