@@ -5,6 +5,18 @@ Parameters:
   VPC-WebApp:
     Description: The web app VPC.
     Type: String
+  PublicSubnet1Cidr-WebApp:
+    Description: The web app - Public Subnet 1 CIDR
+    Type: String
+  PublicSubnet2Cidr-WebApp:
+    Description: The web app - Public Subnet 2 CIDR
+    Type: String
+  PrivateSubnet1Cidr-WebApp:
+    Description: The web app - Private Subnet 1 CIDR
+    Type: String
+  PrivateSubnet2Cidr-WebApp:
+    Description: The web app - Private Subnet 2 CIDR
+    Type: String
 
 Type: AWS::EC2::VPC
 Properties: 
