@@ -5,12 +5,71 @@ Parameters:
   VPC-WebApp:
     Description: The web app VPC.
     Type: String
+  PublicSubnet1Cidr-WebApp:
+    Description: The web app - Public Subnet 1 CIDR
+    Type: String
+  PublicSubnet2Cidr-WebApp:
+    Description: The web app - Public Subnet 2 CIDR
+    Type: String
+  PrivateSubnet1Cidr-WebApp:
+    Description: The web app - Private Subnet 1 CIDR
+    Type: String
+  PrivateSubnet2Cidr-WebApp:
+    Description: The web app - Private Subnet 2 CIDR
+    Type: String
+  AZ1-WebApp:
+    Description: The web app - Availibility Zone 1
+    Type: String
+  AZ2-WebApp:
+    Description: The web app - Availibility Zone 2
+    Type: String
 
-Type: AWS::EC2::VPC
-Properties: 
-  CidrBlock: !Ref VPC-WebApp
-  EnableDnsHostnames: true
-  EnableDnsSupport: true
-  Tags: 
-    - Key: VPC
-    - Value: VPC - high availibility web application
+WebApp-VPC:
+  Type: AWS::EC2::VPC
+  Properties: 
+    CidrBlock: !Ref VPC-WebApp
+    EnableDnsHostnames: true
+    EnableDnsSupport: true
+    Tags: 
+      - Key: VPC
+      - Value: VPC - high availibility web application
+
+WebApp-PublicSubnet1:
+  Type: AWS::EC2::Subnet
+  Properties: 
+    AvailabilityZone: !Ref AZ1-WebApp
+    CidrBlock: !Ref PublicSubnet1Cidr-WebApp
+    Tags: 
+      - Key: Public Subnet 1
+      - Value: Public Subnet 1 - high availibility web application
+    VpcId: !Ref WebApp-VPC
+
+WebApp-PublicSubnet2:
+  Type: AWS::EC2::Subnet
+  Properties: 
+    AvailabilityZone: !Ref AZ2-WebApp
+    CidrBlock: !Ref PublicSubnet2Cidr-WebApp
+    Tags: 
+      - Key: Public Subnet 2
+      - Value: Public Subnet 2 - high availibility web application
+    VpcId: !Ref WebApp-VPC
+
+WebApp-PrivateSubnet1:
+  Type: AWS::EC2::Subnet
+  Properties: 
+    AvailabilityZone: !Ref AZ1-WebApp
+    CidrBlock: !Ref PrivateSubnet1Cidr-WebApp
+    Tags: 
+      - Key: Private Subnet 1
+      - Value: Private Subnet 1 - high availibility web application
+    VpcId: !Ref WebApp-VPC
+
+WebApp-PrivateSubnet2:
+  Type: AWS::EC2::Subnet
+  Properties: 
+    AvailabilityZone: !Ref AZ2-WebApp
+    CidrBlock: !Ref PrivateSubnet2Cidr-WebApp
+    Tags: 
+      - Key: Private Subnet 2
+      - Value: Private Subnet 2 - high availibility web application
+    VpcId: !Ref WebApp-VPC
