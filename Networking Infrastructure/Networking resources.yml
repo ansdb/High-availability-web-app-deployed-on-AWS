@@ -73,3 +73,9 @@ WebApp-PrivateSubnet2:
       - Key: Private Subnet 2
       - Value: Private Subnet 2 - high availibility web application
     VpcId: !Ref WebApp-VPC
+
+Type: AWS::EC2::InternetGateway
+Properties: 
+  Tags: 
+    - Key: Internet Gateway
+    - Value: Internet Gateway - high availibility web application
