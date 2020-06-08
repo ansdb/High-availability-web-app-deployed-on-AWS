@@ -122,3 +122,11 @@ WebApp-NatGateway2:
     Tags: 
       - Key: Nat Gateway 2
       - Value: Nat Gateway 2 - high availibility web application
+
+WebApp-PublicRouteTable:
+  Type: AWS::EC2::RouteTable
+  Properties: 
+    Tags: 
+      - Key: Route Table
+      - Value: Route Table - high availibility web application
+    VpcId: !Ref WebApp-VPC
