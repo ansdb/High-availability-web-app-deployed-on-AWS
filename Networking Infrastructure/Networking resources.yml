@@ -86,3 +86,21 @@ WebApp-InternetgatewayAttachment:
   Properties: 
     InternetGatewayId: !Ref WebApp-InternetGateway
     VpcId: !Ref WebApp-VPC
+
+WebApp-NatGatewayElasticIP1:
+  Type: AWS::EC2::EIP
+  DependsOn: WebApp-InternetgatewayAttachment
+  Properties: 
+    Domain: vpc
+    Tags: 
+      - Key: NatGateway Elastic IP1
+      - Value: NatGateway Elastic IP1 - high availibility web application
+
+WebApp-NatGatewayElasticIP2:
+  Type: AWS::EC2::EIP
+  DependsOn: WebApp-InternetgatewayAttachment
+  Properties: 
+    Domain: vpc
+    Tags: 
+      - Key: NatGateway Elastic IP2
+      - Value: NatGateway Elastic IP2 - high availibility web application
