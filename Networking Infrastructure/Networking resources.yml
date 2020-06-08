@@ -104,3 +104,21 @@ WebApp-NatGatewayElasticIP2:
     Tags: 
       - Key: NatGateway Elastic IP2
       - Value: NatGateway Elastic IP2 - high availibility web application
+
+WebApp-NatGateway1:
+  Type: AWS::EC2::NatGateway
+  Properties: 
+    AllocationId: !GetAtt WebApp-NatGatewayElasticIP1.AllocationId
+    SubnetId: !Ref WebApp-PublicSubnet1
+    Tags: 
+      - Key: Nat Gateway 1
+      - Value: Nat Gateway 1 - high availibility web application
+
+WebApp-NatGateway2:
+  Type: AWS::EC2::NatGateway
+  Properties: 
+    AllocationId: !GetAtt WebApp-NatGatewayElasticIP2.AllocationId
+    SubnetId: !Ref WebApp-PublicSubnet2
+    Tags: 
+      - Key: Nat Gateway 2
+      - Value: Nat Gateway 2 - high availibility web application
