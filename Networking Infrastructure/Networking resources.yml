@@ -23,6 +23,9 @@ Parameters:
   AZ2-WebApp:
     Description: The web app - Availibility Zone 2
     Type: String
+  PublicRouteCidr-WebApp:
+    Description: The web app - Public Route CIDR
+    Type: String
 
 WebApp-VPC:
   Type: AWS::EC2::VPC
@@ -130,3 +133,10 @@ WebApp-PublicRouteTable:
       - Key: Route Table
       - Value: Route Table - high availibility web application
     VpcId: !Ref WebApp-VPC
+
+WebApp-PublicRoute:
+  Type: AWS::EC2::Route
+  Properties: 
+    DestinationCidrBlock: !Ref PublicRouteCidr-WebApp
+    GatewayId: !Ref WebApp-InternetGateway
+    RouteTableId: !Ref WebApp-PublicRouteTable

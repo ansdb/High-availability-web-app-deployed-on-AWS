@@ -26,5 +26,9 @@
     {
         "ParameterKey": "AZ2-WebApp",
         "ParameterValue": "us-west-1b"
+    },
+    {
+        "ParameterKey": "PublicRouteCidr-WebApp",
+        "ParameterValue": "0.0.0.0/0"
     }
 ]
