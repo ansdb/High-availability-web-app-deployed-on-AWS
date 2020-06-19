@@ -23,6 +23,9 @@ Parameters:
   AZ2-WebApp:
     Description: The web app - Availibility Zone 2
     Type: String
+  PublicRouteCidr-WebApp:
+    Description: The web app - Public Route CIDR
+    Type: String
 
 WebApp-VPC:
   Type: AWS::EC2::VPC
@@ -127,6 +130,68 @@ WebApp-PublicRouteTable:
   Type: AWS::EC2::RouteTable
   Properties: 
     Tags: 
-      - Key: Route Table
-      - Value: Route Table - high availibility web application
+      - Key: Public Route Table
+      - Value: Public Route Table - high availibility web application
     VpcId: !Ref WebApp-VPC
+
+WebApp-PublicRoute:
+  Type: AWS::EC2::Route
+  DependsOn: WebApp-InternetgatewayAttachment
+  Properties: 
+    DestinationCidrBlock: !Ref PublicRouteCidr-WebApp
+    GatewayId: !Ref WebApp-InternetGateway
+    RouteTableId: !Ref WebApp-PublicRouteTable
+
+WebApp-PublicSubnet1RouteTableAssociation:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties: 
+    RouteTableId: !Ref WebApp-PublicRouteTable
+    SubnetId: !Ref WebApp-PublicSubnet1
+
+WebApp-PublicSubnet2RouteTableAssociation:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties: 
+    RouteTableId: !Ref WebApp-PublicRouteTable
+    SubnetId: !Ref WebApp-PublicSubnet2
+
+WebApp-PrivateRouteTable1:
+  Type: AWS::EC2::RouteTable
+  Properties: 
+    Tags: 
+      - Key: Private Route Table 1
+      - Value: Private Route Table 1 - high availibility web application
+    VpcId: !Ref WebApp-VPC
+
+WebApp-PrivateRouteTable2:
+  Type: AWS::EC2::RouteTable
+  Properties: 
+    Tags: 
+      - Key: Private Route Table 2
+      - Value: Private Route Table 2 - high availibility web application
+    VpcId: !Ref WebApp-VPC
+
+WebApp-PrivateRoute1:
+  Type: AWS::EC2::Route
+  Properties: 
+    DestinationCidrBlock: !Ref PublicRouteCidr-WebApp
+    NatGatewayId: !Ref WebApp-NatGateway1
+    RouteTableId: !Ref WebApp-PrivateRouteTable1
+
+WebApp-PrivateRoute2:
+  Type: AWS::EC2::Route
+  Properties: 
+    DestinationCidrBlock: !Ref PublicRouteCidr-WebApp
+    NatGatewayId: !Ref WebApp-NatGateway2
+    RouteTableId: !Ref WebApp-PrivateRouteTable2
+
+WebApp-PrivateSubnet1RouteTableAssociation:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties: 
+    RouteTableId: !Ref WebApp-PrivateRouteTable1
+    SubnetId: !Ref WebApp-PrivateSubnet1
+
+WebApp-PrivateSubnet2RouteTableAssociation:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties: 
+    RouteTableId: !Ref WebApp-PrivateRouteTable2
+    SubnetId: !Ref WebApp-PrivateSubnet2
