@@ -195,3 +195,30 @@ WebApp-PrivateSubnet2RouteTableAssociation:
   Properties: 
     RouteTableId: !Ref WebApp-PrivateRouteTable2
     SubnetId: !Ref WebApp-PrivateSubnet2
+
+Outputs:
+  VPC:
+    Description: The WebApp VPC reference
+    Value: !Ref WebApp-VPC
+    Export:
+      Name: VPC-WebApp-ID
+  PublicSubnet1:
+    Description: The WebApp Public Subnet 1 reference
+    Value: !Ref WebApp-PublicSubnet1
+    Export:
+      Name: PublicSubnet1-WebApp
+  PublicSubnet2:
+    Description: The WebApp Public Subnet 2 reference
+    Value: !Ref WebApp-PublicSubnet2
+    Export:
+      Name: PublicSubnet2-WebApp
+  PrivateSubnet1:
+    Description: The WebApp Private Subnet 1 reference
+    Value: !Ref WebApp-PrivateSubnet1
+    Export:
+      Name: PrivateSubnet1-WebApp
+  PrivateSubnet2:
+    Description: The WebApp Private Subnet 2 reference
+    Value: !Ref WebApp-PrivateSubnet2
+    Export:
+      Name: PrivateSubnet2-WebApp
