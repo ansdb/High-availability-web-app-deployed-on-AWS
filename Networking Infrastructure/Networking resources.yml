@@ -136,6 +136,7 @@ WebApp-PublicRouteTable:
 
 WebApp-PublicRoute:
   Type: AWS::EC2::Route
+  DependsOn: WebApp-InternetgatewayAttachment
   Properties: 
     DestinationCidrBlock: !Ref PublicRouteCidr-WebApp
     GatewayId: !Ref WebApp-InternetGateway
