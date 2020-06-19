@@ -140,3 +140,15 @@ WebApp-PublicRoute:
     DestinationCidrBlock: !Ref PublicRouteCidr-WebApp
     GatewayId: !Ref WebApp-InternetGateway
     RouteTableId: !Ref WebApp-PublicRouteTable
+
+WebApp-RouteTableAssociation1:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties: 
+    RouteTableId: !Ref WebApp-PublicRouteTable
+    SubnetId: !Ref WebApp-PublicSubnet1
+
+WebApp-RouteTableAssociation2:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties: 
+    RouteTableId: !Ref WebApp-PublicRouteTable
+    SubnetId: !Ref WebApp-PublicSubnet2
