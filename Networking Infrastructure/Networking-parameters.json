@@ -1,0 +1,34 @@
+[
+    {
+        "ParameterKey": "VPCWebApp",
+        "ParameterValue": "10.0.0.0/16"
+    },
+    {
+        "ParameterKey": "PublicSubnet1CidrWebApp",
+        "ParameterValue": "10.0.0.0/24"
+    },
+    {
+        "ParameterKey": "PublicSubnet2CidrWebApp",
+        "ParameterValue": "10.0.1.0/24"
+    },
+    {
+        "ParameterKey": "PrivateSubnet1CidrWebApp",
+        "ParameterValue": "10.0.2.0/24"
+    },
+    {
+        "ParameterKey": "PrivateSubnet2CidrWebApp",
+        "ParameterValue": "10.0.3.0/24"
+    },
+    {
+        "ParameterKey": "AZ1WebApp",
+        "ParameterValue": "us-west-2a"
+    },
+    {
+        "ParameterKey": "AZ2WebApp",
+        "ParameterValue": "us-west-2b"
+    },
+    {
+        "ParameterKey": "PublicRouteCidrWebApp",
+        "ParameterValue": "0.0.0.0/0"
+    }
+]
