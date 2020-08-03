@@ -1,0 +1,225 @@
+Description:  This template contains all the necessary networking components/infrastructure to make the web app 
+              Highly available, scalable, efficient and secure.
+
+Parameters:
+  VPCWebApp:
+    Description: The web app VPC.
+    Type: String
+  PublicSubnet1CidrWebApp:
+    Description: The web app - Public Subnet 1 CIDR
+    Type: String
+  PublicSubnet2CidrWebApp:
+    Description: The web app - Public Subnet 2 CIDR
+    Type: String
+  PrivateSubnet1CidrWebApp:
+    Description: The web app - Private Subnet 1 CIDR
+    Type: String
+  PrivateSubnet2CidrWebApp:
+    Description: The web app - Private Subnet 2 CIDR
+    Type: String
+  AZ1WebApp:
+    Description: The web app - Availibility Zone 1
+    Type: String
+  AZ2WebApp:
+    Description: The web app - Availibility Zone 2
+    Type: String
+  PublicRouteCidrWebApp:
+    Description: The web app - Public Route CIDR
+    Type: String
+
+Resources:
+  WebAppVPC:
+    Type: AWS::EC2::VPC
+    Properties: 
+      CidrBlock: !Ref VPCWebApp
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags: 
+        - Key: VPC
+          Value: VPC - high availibility web application
+
+  WebAppPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: !Ref AZ1WebApp
+      CidrBlock: !Ref PublicSubnet1CidrWebApp
+      Tags: 
+        - Key: Public Subnet 1
+          Value: Public Subnet 1 - high availibility web application
+      VpcId: !Ref WebAppVPC
+
+  WebAppPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: !Ref AZ2WebApp
+      CidrBlock: !Ref PublicSubnet2CidrWebApp
+      Tags: 
+        - Key: Public Subnet 2
+          Value: Public Subnet 2 - high availibility web application
+      VpcId: !Ref WebAppVPC
+
+  WebAppPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: !Ref AZ1WebApp
+      CidrBlock: !Ref PrivateSubnet1CidrWebApp
+      Tags: 
+        - Key: Private Subnet 1
+          Value: Private Subnet 1 - high availibility web application
+      VpcId: !Ref WebAppVPC
+
+  WebAppPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: !Ref AZ2WebApp
+      CidrBlock: !Ref PrivateSubnet2CidrWebApp
+      Tags: 
+        - Key: Private Subnet 2
+          Value: Private Subnet 2 - high availibility web application
+      VpcId: !Ref WebAppVPC
+
+  WebAppInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties: 
+      Tags: 
+        - Key: Internet Gateway
+          Value: Internet Gateway - high availibility web application
+
+  WebAppInternetgatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties: 
+      InternetGatewayId: !Ref WebAppInternetGateway
+      VpcId: !Ref WebAppVPC
+
+  WebAppNatGatewayElasticIP1:
+    Type: AWS::EC2::EIP
+    DependsOn: WebAppInternetgatewayAttachment
+    Properties: 
+      Domain: vpc
+      Tags: 
+        - Key: NatGateway Elastic IP1
+          Value: NatGateway Elastic IP1 - high availibility web application
+
+  WebAppNatGatewayElasticIP2:
+    Type: AWS::EC2::EIP
+    DependsOn: WebAppInternetgatewayAttachment
+    Properties: 
+      Domain: vpc
+      Tags: 
+        - Key: NatGateway Elastic IP2
+          Value: NatGateway Elastic IP2 - high availibility web application
+
+  WebAppNatGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      AllocationId: !GetAtt WebAppNatGatewayElasticIP1.AllocationId
+      SubnetId: !Ref WebAppPublicSubnet1
+      Tags: 
+        - Key: Nat Gateway 1
+          Value: Nat Gateway 1 - high availibility web application
+
+  WebAppNatGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      AllocationId: !GetAtt WebAppNatGatewayElasticIP2.AllocationId
+      SubnetId: !Ref WebAppPublicSubnet2
+      Tags: 
+        - Key: Nat Gateway 2
+          Value: Nat Gateway 2 - high availibility web application
+
+  WebAppPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      Tags: 
+        - Key: Public Route Table
+          Value: Public Route Table - high availibility web application
+      VpcId: !Ref WebAppVPC
+
+  WebAppPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: WebAppInternetgatewayAttachment
+    Properties: 
+      DestinationCidrBlock: !Ref PublicRouteCidrWebApp
+      GatewayId: !Ref WebAppInternetGateway
+      RouteTableId: !Ref WebAppPublicRouteTable
+
+  WebAppPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref WebAppPublicRouteTable
+      SubnetId: !Ref WebAppPublicSubnet1
+
+  WebAppPublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref WebAppPublicRouteTable
+      SubnetId: !Ref WebAppPublicSubnet2
+
+  WebAppPrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      Tags: 
+        - Key: Private Route Table 1
+          Value: Private Route Table 1 - high availibility web application
+      VpcId: !Ref WebAppVPC
+
+  WebAppPrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      Tags: 
+        - Key: Private Route Table 2
+          Value: Private Route Table 2 - high availibility web application
+      VpcId: !Ref WebAppVPC
+
+  WebAppPrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties: 
+      DestinationCidrBlock: !Ref PublicRouteCidrWebApp
+      NatGatewayId: !Ref WebAppNatGateway1
+      RouteTableId: !Ref WebAppPrivateRouteTable1
+
+  WebAppPrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties: 
+      DestinationCidrBlock: !Ref PublicRouteCidrWebApp
+      NatGatewayId: !Ref WebAppNatGateway2
+      RouteTableId: !Ref WebAppPrivateRouteTable2
+
+  WebAppPrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref WebAppPrivateRouteTable1
+      SubnetId: !Ref WebAppPrivateSubnet1
+
+  WebAppPrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref WebAppPrivateRouteTable2
+      SubnetId: !Ref WebAppPrivateSubnet2
+
+Outputs:
+  VPC:
+    Description: TheWebApp VPC reference
+    Value: !Ref WebAppVPC
+    Export:
+      Name: VPCWebApp-ID
+  PublicSubnet1:
+    Description: TheWebApp Public Subnet 1 reference
+    Value: !Ref WebAppPublicSubnet1
+    Export:
+      Name: PublicSubnet1WebApp
+  PublicSubnet2:
+    Description: TheWebApp Public Subnet 2 reference
+    Value: !Ref WebAppPublicSubnet2
+    Export:
+      Name: PublicSubnet2WebApp
+  PrivateSubnet1:
+    Description: TheWebApp Private Subnet 1 reference
+    Value: !Ref WebAppPrivateSubnet1
+    Export:
+      Name: PrivateSubnet1WebApp
+  PrivateSubnet2:
+    Description: TheWebApp Private Subnet 2 reference
+    Value: !Ref WebAppPrivateSubnet2
+    Export:
+      Name: PrivateSubnet2WebApp
