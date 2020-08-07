@@ -1,0 +1,55 @@
+Description: This servers template contains the resources needed to make the web app
+             high available and scalable.
+
+Parameters:
+  AllowAllEgressIngressCidr:
+    Description: The web app load balancer egress and ingress Cird.
+    Type: String
+  LoadBalancerEgressIngressPort:
+    Description: The web app load balancer egress and ingress Port.
+    Type: String
+  WebServersIngressPort:
+    Description: The web app servers ingress Port.
+
+Resources:
+  WebAppLoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow all traffic to acheive the web app
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: !Ref LoadBalancerEgressIngressPort
+        ToPort: !Ref LoadBalancerEgressIngressPort
+        CidrIp: !Ref AllowAllEgressIngressCidr
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: !Ref LoadBalancerEgressIngressPort
+        ToPort: !Ref LoadBalancerEgressIngressPort
+        CidrIp: !Ref AllowAllEgressIngressCidr
+      Tags:
+        - Key: Load balancer security group
+          Value: Web App load balancer security group
+      VpcId: 
+        - Fn::ImportValue:
+            !Sub VPCWebApp-ID
+
+  WebAppServersSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow traffic to our hosts and SSH from local only
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: !Ref AllowAllEgressIngressCidr
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: !Ref WebServersIngressPort
+        ToPort: !Ref WebServersIngressPort
+        CidrIp: !Ref AllowAllEgressIngressCidr
+      Tags:
+        - Key: servers security group
+          Value: Web App servers security group
+      VpcId: 
+        - Fn::ImportValue:
+            !Sub VPCWebApp-ID

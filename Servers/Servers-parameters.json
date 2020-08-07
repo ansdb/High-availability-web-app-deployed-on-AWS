@@ -1,0 +1,14 @@
+[
+    {
+        "ParameterKey": "AllowAllEgressIngressCidr",
+        "ParameterValue": "0.0.0.0/0"
+    },
+    {
+        "ParameterKey": "LoadBalancerEgressIngressPort",
+        "ParameterValue": "80"
+    },
+    {
+        "ParameterKey": "WebServersIngressPort",
+        "ParameterValue": "8080"
+    }
+]
