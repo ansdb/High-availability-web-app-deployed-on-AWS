@@ -65,3 +65,20 @@ WebAppLoadBalancer:
     Tags:
       - Key: load balancer
         Value: Web App load balancer
+
+WebAppTargetGroup:
+  Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  Properties: 
+    HealthCheckIntervalSeconds: 10
+    HealthCheckPath: /
+    HealthCheckProtocol: HTTP
+    HealthCheckTimeoutSeconds: 5
+    HealthyThresholdCount: 3
+    Name: Web App target group
+    Port: !Ref WebServersIngressPort
+    Protocol: HTTP
+    Tags: 
+      - Key: Target Group
+        Value: Web App Target Group
+    UnhealthyThresholdCount: 2
+    VpcId: Fn::ImportValue: !Sub VPCWebApp-ID
