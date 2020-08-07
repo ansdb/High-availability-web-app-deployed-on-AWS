@@ -53,3 +53,15 @@ Resources:
       VpcId: 
         - Fn::ImportValue:
             !Sub VPCWebApp-ID
+
+WebAppLoadBalancer:
+  Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  Properties:
+    Name: Web App load balancer
+    SecurityGroups: !Ref WebAppLoadBalancerSecurityGroup
+    Subnets:
+      - Fn:ImportValue: !Sub PublicSubnet1WebApp
+      - Fn:ImportValue: !Sub PublicSubnet2WebApp
+    Tags:
+      - Key: load balancer
+        Value: Web App load balancer
