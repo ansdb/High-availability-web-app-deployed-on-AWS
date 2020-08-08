@@ -148,3 +148,43 @@ Resources:
       MinSize: !Ref MinimumServers
       MaxSize: !Ref MaximumServers
       TargetGroupARNs: !Ref WebAppTargetGroup
+
+  WebAppBastionHostSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow just my Ip Address to connect to bastion host for troubleshooting purposes
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        # Put your own IP address that will be allowed to connect to the bastion host
+        CidrIp: My Computer IP/Your Computer IP 
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: !Ref AllowAllEgressIngressCidr
+      Tags:
+        - Key: Bastion host security group
+          Value: Web App bastion host security group
+      VpcId: 
+        - Fn::ImportValue:
+            !Sub VPCWebApp-ID
+
+#This bastion host will be used to ssh into the web app hosts located in the two private subnets to troubleshoot
+
+  WebAppBastionHostEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-west-2a
+      BlockDeviceMappings: 
+        - DeviceName: "/dev/sdk"
+          Ebs: 
+            VolumeSize: 10
+      ImageId: ami-003634241a8fcdec0
+      InstanceType: t2-micro
+# The private key/public key file name that will allow you to ssh into your bastion host remotely
+# you need to previously created it on you AWS account before running this template so it will ready to use
+      KeyName: web-app-bastion-host
+      SecurityGroups: !Ref WebAppBastionHostSecurityGroup
+      SubnetId: Fn::ImportValue: !Sub WebAppPublicSubnet1
