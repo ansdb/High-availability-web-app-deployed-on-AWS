@@ -1,0 +1,26 @@
+[
+    {
+        "ParameterKey": "AllowAllEgressIngressCidr",
+        "ParameterValue": "0.0.0.0/0"
+    },
+    {
+        "ParameterKey": "LoadBalancerEgressIngressPort",
+        "ParameterValue": "80"
+    },
+    {
+        "ParameterKey": "WebServersIngressPort",
+        "ParameterValue": "8080"
+    },
+    {
+        "ParameterKey": "WebServersProtocol",
+        "ParameterValue": "HTTP"
+    },
+    {
+        "ParameterKey": "MinimumServers",
+        "ParameterValue": "2"
+    },
+    {
+        "ParameterKey": "MaximumServers",
+        "ParameterValue": "4"
+    }
+]
