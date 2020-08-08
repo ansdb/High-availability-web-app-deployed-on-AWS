@@ -10,6 +10,16 @@ Parameters:
     Type: String
   WebServersIngressPort:
     Description: The web app servers ingress Port.
+    Type: String
+  WebServersProtocol:
+    Description: The web app servers Protocol.
+    Type: String
+  MinimumServers:
+    Description: The web app Minimum Servers for auto scaling.
+    Type: String
+  MaximumServers:
+    Description: The web app Maximum Servers for auto scaling.
+    Type: String
 
 Resources:
   WebAppLoadBalancerSecurityGroup:
@@ -54,54 +64,87 @@ Resources:
         - Fn::ImportValue:
             !Sub VPCWebApp-ID
 
-WebAppLoadBalancer:
-  Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-  Properties:
-    Name: Web App load balancer
-    SecurityGroups: !Ref WebAppLoadBalancerSecurityGroup
-    Subnets:
-      - Fn:ImportValue: !Sub PublicSubnet1WebApp
-      - Fn:ImportValue: !Sub PublicSubnet2WebApp
-    Tags:
-      - Key: load balancer
-        Value: Web App load balancer
+  WebAppLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: Web App load balancer
+      SecurityGroups: !Ref WebAppLoadBalancerSecurityGroup
+      Subnets:
+        - Fn:ImportValue: !Sub PublicSubnet1WebApp
+        - Fn:ImportValue: !Sub PublicSubnet2WebApp
+      Tags:
+        - Key: load balancer
+          Value: Web App load balancer
 
-WebAppTargetGroup:
-  Type: AWS::ElasticLoadBalancingV2::TargetGroup
-  Properties: 
-    HealthCheckIntervalSeconds: 10
-    HealthCheckPath: /
-    HealthCheckProtocol: HTTP
-    HealthCheckTimeoutSeconds: 5
-    HealthyThresholdCount: 3
-    Name: Web App target group
-    Port: !Ref WebServersIngressPort
-    Protocol: HTTP
-    Tags: 
-      - Key: Target Group
-        Value: Web App Target Group
-    UnhealthyThresholdCount: 2
-    VpcId: Fn::ImportValue: !Sub VPCWebApp-ID
+  WebAppTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties: 
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: !Ref WebServersProtocol
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      Name: Web App target group
+      Port: !Ref WebServersIngressPort
+      Protocol: !Ref WebServersProtocol
+      Tags: 
+        - Key: Target Group
+          Value: Web App Target Group
+      UnhealthyThresholdCount: 2
+      VpcId: Fn::ImportValue: !Sub VPCWebApp-ID
 
-WebAppLoadBalancerListener:
-  Type: AWS::ElasticLoadBalancingV2::Listener
-  Properties:
-    DefaultActions:
-      - Type: forward
-        TargetGroupArn: !Ref WebAppTargetGroup
-    LoadBalancerArn: !Ref WebAppLoadBalancer
-    Port: !Ref LoadBalancerEgressIngressPort
-    Protocol: HTTP
+  WebAppLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref WebAppTargetGroup
+      LoadBalancerArn: !Ref WebAppLoadBalancer
+      Port: !Ref LoadBalancerEgressIngressPort
+      Protocol: !Ref WebServersProtocol
 
-WebAppLoadBalancerListenerRule:
-  Type: AWS::ElasticLoadBalancingV2::ListenerRule
-  Properties: 
-    Actions: 
-      - Type: forward
-        TargetGroupArn: !Ref WebAppTargetGroup
-    Conditions: 
-      - Field: path-pattern
-        Values: [/]
-    ListenerArn: !Ref WebAppLoadBalancerListener
-    Priority: 1
+  WebAppLoadBalancerListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties: 
+      Actions: 
+        - Type: forward
+          TargetGroupArn: !Ref WebAppTargetGroup
+      Conditions: 
+        - Field: path-pattern
+          Values: [/]
+      ListenerArn: !Ref WebAppLoadBalancerListener
+      Priority: 1
 
+  WebAppLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties: 
+      BlockDeviceMappings: 
+        - DeviceName: "/dev/sdk"
+          Ebs: 
+            VolumeSize: 10
+      ImageId: ami-003634241a8fcdec0
+      InstanceType: t3.medium
+      LaunchConfigurationName: Web App Launch Configuration
+      SecurityGroups: !Ref WebAppServersSecurityGroup
+      UserData: 
+          #!/bin/bash
+          apt-get update -y
+          apt-get install unzip awscli -y
+          apt-get install apache2 -y
+          systemctl start apache2.service
+          cd /var/www/html
+          aws s3 cp s3://udacity-demo-1/udacity.zip .
+          unzip -o udacity.zip
+
+  WebAppAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: Web App Auto Scaling Group
+      VPCZoneIdentifier:
+      - Fn::ImportValue: 
+          - !Sub PrivateSubnet1WebApp
+          - !Sub PrivateSubnet2WebApp
+      LaunchConfigurationName: !Ref WebAppLaunchConfiguration
+      MinSize: !Ref MinimumServers
+      MaxSize: !Ref MaximumServers
+      TargetGroupARNs: !Ref WebAppTargetGroup
