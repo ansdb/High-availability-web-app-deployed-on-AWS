@@ -8,9 +8,6 @@ Parameters:
   LoadBalancerEgressIngressPort:
     Description: The web app load balancer egress and ingress Port.
     Type: String
-  WebServersIngressPort:
-    Description: The web app servers ingress Port.
-    Type: String
   WebServersProtocol:
     Description: The web app servers Protocol.
     Type: String
@@ -40,8 +37,7 @@ Resources:
         - Key: Load balancer security group
           Value: Web App load balancer security group
       VpcId: 
-        - Fn::ImportValue:
-            !Sub VPCWebApp-ID
+        Fn::ImportValue: VPCWebApp-ID
 
   WebAppServersSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -54,44 +50,45 @@ Resources:
         CidrIp: !Ref AllowAllEgressIngressCidr
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: !Ref WebServersIngressPort
-        ToPort: !Ref WebServersIngressPort
+        FromPort: !Ref LoadBalancerEgressIngressPort
+        ToPort: !Ref LoadBalancerEgressIngressPort
         CidrIp: !Ref AllowAllEgressIngressCidr
       Tags:
         - Key: servers security group
           Value: Web App servers security group
       VpcId: 
-        - Fn::ImportValue:
-            !Sub VPCWebApp-ID
+        Fn::ImportValue: VPCWebApp-ID
 
   WebAppLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: Web App load balancer
-      SecurityGroups: !Ref WebAppLoadBalancerSecurityGroup
+      Name: WebAppLoadBalancer
       Subnets:
-        - Fn:ImportValue: !Sub PublicSubnet1WebApp
-        - Fn:ImportValue: !Sub PublicSubnet2WebApp
+        - Fn::ImportValue: PublicSubnet1WebApp
+        - Fn::ImportValue: PublicSubnet2WebApp
+      SecurityGroups:
+        - !Ref WebAppLoadBalancerSecurityGroup
       Tags:
         - Key: load balancer
           Value: Web App load balancer
 
   WebAppTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties: 
+    Properties:
       HealthCheckIntervalSeconds: 10
       HealthCheckPath: /
       HealthCheckProtocol: !Ref WebServersProtocol
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 3
-      Name: Web App target group
-      Port: !Ref WebServersIngressPort
+      Name: WebAppTargetGroup
+      Port: !Ref LoadBalancerEgressIngressPort
       Protocol: !Ref WebServersProtocol
       Tags: 
         - Key: Target Group
           Value: Web App Target Group
       UnhealthyThresholdCount: 2
-      VpcId: Fn::ImportValue: !Sub VPCWebApp-ID
+      VpcId:
+        Fn::ImportValue: VPCWebApp-ID
 
   WebAppLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -117,16 +114,17 @@ Resources:
 
   WebAppLaunchConfiguration:
     Type: AWS::AutoScaling::LaunchConfiguration
-    Properties: 
+    Properties:
       BlockDeviceMappings: 
         - DeviceName: "/dev/sdk"
           Ebs: 
             VolumeSize: 10
       ImageId: ami-003634241a8fcdec0
       InstanceType: t3.medium
-      LaunchConfigurationName: Web App Launch Configuration
-      SecurityGroups: !Ref WebAppServersSecurityGroup
+      SecurityGroups: 
+        - !Ref WebAppServersSecurityGroup
       UserData: 
+        Fn::Base64: !Sub |
           #!/bin/bash
           apt-get update -y
           apt-get install unzip awscli -y
@@ -135,19 +133,17 @@ Resources:
           cd /var/www/html
           aws s3 cp s3://udacity-demo-1/udacity.zip .
           unzip -o udacity.zip
-
   WebAppAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      AutoScalingGroupName: Web App Auto Scaling Group
+      AutoScalingGroupName: WebAppAutoScalingGroup
       VPCZoneIdentifier:
-      - Fn::ImportValue: 
-          - !Sub PrivateSubnet1WebApp
-          - !Sub PrivateSubnet2WebApp
+        - Fn::ImportValue: PrivateSubnets
       LaunchConfigurationName: !Ref WebAppLaunchConfiguration
       MinSize: !Ref MinimumServers
       MaxSize: !Ref MaximumServers
-      TargetGroupARNs: !Ref WebAppTargetGroup
+      TargetGroupARNs:
+        - !Ref WebAppTargetGroup
 
   WebAppBastionHostSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -158,7 +154,7 @@ Resources:
         FromPort: 22
         ToPort: 22
         # Put your own IP address that will be allowed to connect to the bastion host
-        CidrIp: My Computer IP/Your Computer IP 
+        CidrIp: 0.0.0.0/32
       SecurityGroupEgress:
       - IpProtocol: tcp
         FromPort: 0
@@ -168,9 +164,7 @@ Resources:
         - Key: Bastion host security group
           Value: Web App bastion host security group
       VpcId: 
-        - Fn::ImportValue:
-            !Sub VPCWebApp-ID
-
+        Fn::ImportValue: VPCWebApp-ID
 #This bastion host will be used to ssh into the web app hosts located in the two private subnets to troubleshoot
 
   WebAppBastionHostEC2Instance:
@@ -182,9 +176,10 @@ Resources:
           Ebs: 
             VolumeSize: 10
       ImageId: ami-003634241a8fcdec0
-      InstanceType: t2-micro
+      InstanceType: t2.micro
 # The private key/public key file name that will allow you to ssh into your bastion host remotely
 # you need to previously created it on you AWS account before running this template so it will ready to use
-      KeyName: web-app-bastion-host
-      SecurityGroups: !Ref WebAppBastionHostSecurityGroup
-      SubnetId: Fn::ImportValue: !Sub WebAppPublicSubnet1
+      SubnetId:
+        Fn::ImportValue: PublicSubnet1WebApp
+      SecurityGroupIds:
+        - !GetAtt "WebAppBastionHostSecurityGroup.GroupId"
