@@ -115,6 +115,7 @@ Resources:
   WebAppLaunchConfiguration:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
+      IamInstanceProfile: !ImportValue InstanceProfileWebApp
       BlockDeviceMappings: 
         - DeviceName: "/dev/sdk"
           Ebs: 
@@ -133,6 +134,7 @@ Resources:
           cd /var/www/html
           aws s3 cp s3://udacity-demo-1/udacity.zip .
           unzip -o udacity.zip
+
   WebAppAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -179,6 +181,7 @@ Resources:
       InstanceType: t2.micro
 # The private key/public key file name that will allow you to ssh into your bastion host remotely
 # you need to previously created it on you AWS account before running this template so it will ready to use
+      KeyName: your-ssh-key-name
       SubnetId:
         Fn::ImportValue: PublicSubnet1WebApp
       SecurityGroupIds:
