@@ -1,0 +1,50 @@
+Description: This Role template will be responsible for the IAM Role
+             that will gives access to the EC2 instances on auto scaling
+             group to retrieve our web app from an S3 bucket and download
+             the website files from it
+
+Parameters:
+  giveAccessTo:
+    Description: The EC2 instance that will has access to an S3 Bucket
+    Type: String
+  resourceAction:
+    Description: The EC2 instance action to perform on the S3 Bucket
+    Type: String
+
+
+Resources:
+  UdacityS3ReadOnlyEC2:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - !Ref giveAccessTo
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: RetrieveS3Object
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: !Ref resourceAction
+                Resource: "*"
+
+  WebAppInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref UdacityS3ReadOnlyEC2
+
+Outputs:
+  InstanceProfile:
+    Description: The autoscaling group instance profile 
+    Value: !Ref WebAppInstanceProfile
+    Export:
+      Name: InstanceProfileWebApp
