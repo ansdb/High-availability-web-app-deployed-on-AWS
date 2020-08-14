@@ -17,6 +17,9 @@ Parameters:
   MaximumServers:
     Description: The web app Maximum Servers for auto scaling.
     Type: String
+  HTTPUrlProtocole:
+    Description: The web app url protocole.
+    Type: String
 
 Resources:
   WebAppLoadBalancerSecurityGroup:
@@ -186,3 +189,10 @@ Resources:
         Fn::ImportValue: PublicSubnet1WebApp
       SecurityGroupIds:
         - !GetAtt "WebAppBastionHostSecurityGroup.GroupId"
+
+Outputs:
+  LoadBalancerFullUrl:
+    Description: The load balancer DNS Name with http in front
+    Value: !Join ["" ,[!Ref HTTPUrlProtocole,!GetAtt WebAppLoadBalancer.DNSName]]
+    Export:
+      Name: LoadBalancerDNSNameUrl

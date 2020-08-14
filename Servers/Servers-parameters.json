@@ -18,5 +18,9 @@
     {
         "ParameterKey": "MaximumServers",
         "ParameterValue": "4"
+    },
+    {
+        "ParameterKey": "HTTPUrlProtocole",
+        "ParameterValue": "http://"
     }
 ]
