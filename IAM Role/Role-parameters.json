@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterKey": "giveAccessTo",
+        "ParameterValue": "ec2.amazonaws.com"
+    },
+    {
+        "ParameterKey": "resourceAction",
+        "ParameterValue": "S3:GetObject"
+    }
+]

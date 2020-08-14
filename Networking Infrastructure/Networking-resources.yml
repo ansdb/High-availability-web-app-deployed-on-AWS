@@ -43,6 +43,7 @@ Resources:
     Properties: 
       AvailabilityZone: !Ref AZ1WebApp
       CidrBlock: !Ref PublicSubnet1CidrWebApp
+      MapPublicIpOnLaunch: true
       Tags: 
         - Key: Public Subnet 1
           Value: Public Subnet 1 - high availibility web application
@@ -53,6 +54,7 @@ Resources:
     Properties: 
       AvailabilityZone: !Ref AZ2WebApp
       CidrBlock: !Ref PublicSubnet2CidrWebApp
+      MapPublicIpOnLaunch: true
       Tags: 
         - Key: Public Subnet 2
           Value: Public Subnet 2 - high availibility web application
@@ -63,6 +65,7 @@ Resources:
     Properties: 
       AvailabilityZone: !Ref AZ1WebApp
       CidrBlock: !Ref PrivateSubnet1CidrWebApp
+      MapPublicIpOnLaunch: false
       Tags: 
         - Key: Private Subnet 1
           Value: Private Subnet 1 - high availibility web application
@@ -73,6 +76,7 @@ Resources:
     Properties: 
       AvailabilityZone: !Ref AZ2WebApp
       CidrBlock: !Ref PrivateSubnet2CidrWebApp
+      MapPublicIpOnLaunch: false
       Tags: 
         - Key: Private Subnet 2
           Value: Private Subnet 2 - high availibility web application
@@ -223,3 +227,8 @@ Outputs:
     Value: !Ref WebAppPrivateSubnet2
     Export:
       Name: PrivateSubnet2WebApp
+  PrivateSubnets:
+    Description: TheWebApp Private Subnets 1 & 2
+    Value: !Join ["," ,[!Ref WebAppPrivateSubnet1, !Ref WebAppPrivateSubnet2]]
+    Export:
+      Name: PrivateSubnets

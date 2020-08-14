@@ -8,10 +8,6 @@
         "ParameterValue": "80"
     },
     {
-        "ParameterKey": "WebServersIngressPort",
-        "ParameterValue": "8080"
-    },
-    {
         "ParameterKey": "WebServersProtocol",
         "ParameterValue": "HTTP"
     },
@@ -22,5 +18,9 @@
     {
         "ParameterKey": "MaximumServers",
         "ParameterValue": "4"
+    },
+    {
+        "ParameterKey": "HTTPUrlProtocole",
+        "ParameterValue": "http://"
     }
 ]
