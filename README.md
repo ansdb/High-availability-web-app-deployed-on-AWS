@@ -9,3 +9,9 @@ The diagram illustrates the project/web app cloud _structure_ so that you can ea
 
 - #### Networking Infrastructure.
 This is a cloud formation file that contains the necessary code to set up the networking infrastructure on the AWS cloud
+
+- #### IAM Role.
+Here you will find an IAM Role for the ec2 instances to access the S3 bucket to retreive web app files from it.
+
+- #### Servers.
+Here you will find all the nessecary resources to host your app and make it high available and scalable.
