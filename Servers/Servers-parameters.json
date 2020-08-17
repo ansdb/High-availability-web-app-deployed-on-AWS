@@ -4,10 +4,6 @@
         "ParameterValue": "0.0.0.0/0"
     },
     {
-        "ParameterKey": "LoadBalancerEgressIngressPort",
-        "ParameterValue": "80"
-    },
-    {
         "ParameterKey": "WebServersProtocol",
         "ParameterValue": "HTTP"
     },

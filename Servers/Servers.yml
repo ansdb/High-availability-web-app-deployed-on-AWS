@@ -5,9 +5,6 @@ Parameters:
   AllowAllEgressIngressCidr:
     Description: The web app load balancer egress and ingress Cird.
     Type: String
-  LoadBalancerEgressIngressPort:
-    Description: The web app load balancer egress and ingress Port.
-    Type: String
   WebServersProtocol:
     Description: The web app servers Protocol.
     Type: String
@@ -28,13 +25,13 @@ Resources:
       GroupDescription: Allow all traffic to acheive the web app
       SecurityGroupEgress:
       - IpProtocol: tcp
-        FromPort: !Ref LoadBalancerEgressIngressPort
-        ToPort: !Ref LoadBalancerEgressIngressPort
+        FromPort: 80
+        ToPort: 80
         CidrIp: !Ref AllowAllEgressIngressCidr
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: !Ref LoadBalancerEgressIngressPort
-        ToPort: !Ref LoadBalancerEgressIngressPort
+        FromPort: 80
+        ToPort: 80
         CidrIp: !Ref AllowAllEgressIngressCidr
       Tags:
         - Key: Load balancer security group
@@ -53,8 +50,8 @@ Resources:
         CidrIp: !Ref AllowAllEgressIngressCidr
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: !Ref LoadBalancerEgressIngressPort
-        ToPort: !Ref LoadBalancerEgressIngressPort
+        FromPort: 80
+        ToPort: 80
         CidrIp: !Ref AllowAllEgressIngressCidr
       Tags:
         - Key: servers security group
@@ -84,7 +81,7 @@ Resources:
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 3
       Name: WebAppTargetGroup
-      Port: !Ref LoadBalancerEgressIngressPort
+      Port: 80
       Protocol: !Ref WebServersProtocol
       Tags: 
         - Key: Target Group
@@ -100,7 +97,7 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref WebAppTargetGroup
       LoadBalancerArn: !Ref WebAppLoadBalancer
-      Port: !Ref LoadBalancerEgressIngressPort
+      Port: 80
       Protocol: !Ref WebServersProtocol
 
   WebAppLoadBalancerListenerRule:
